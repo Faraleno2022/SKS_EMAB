@@ -22,12 +22,13 @@ pip install -r requirements.txt
 python main.py
 ```
 
-Au premier lancement, un compte super-administrateur est créé automatiquement :
+Aucun compte n'est créé automatiquement. Sur un poste neuf, les comptes sont récupérés
+depuis le serveur par la synchronisation (fichier `sync_config.json` à côté de l'application).
+Pour la console web seule, un super-administrateur peut aussi être créé à la main :
+`python manage.py createwebadmin <identifiant> <mot de passe>`.
 
-- **Identifiant** : `admin`
-- **Mot de passe** : `admin123`
-
-**Changez ce mot de passe immédiatement après la première connexion.**
+L'ancien compte `admin` / `admin123` des versions précédentes est désactivé au démarrage
+dès qu'un autre super-administrateur actif existe.
 
 ## Structure du projet
 

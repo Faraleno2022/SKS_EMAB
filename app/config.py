@@ -33,15 +33,6 @@ DB_PATH = DATA_DIR / "gestionnaire.db"
 LOGO_PATH = ASSETS_DIR / "logo_emab.png"
 ICON_PATH = ASSETS_DIR / "logo_emab.ico"
 
-DEFAULT_SUPER_ADMIN = {
-    "identifiant": "admin",
-    "password": "admin123",
-    "nom_complet": "Super Administrateur",
-    "matricule": "ADM-000",
-    "telephone": "",
-    "role": "super_admin",
-}
-
 PAGE_SIZE = 50
 CURRENCY_SYMBOL = "GNF"
 DATETIME_FMT = "%Y-%m-%d %H:%M:%S"

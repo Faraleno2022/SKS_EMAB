@@ -325,6 +325,42 @@ def _apply_pending_update(data_dir: Path) -> bool:
     return apply_pending_update(data_dir, sys.executable)
 
 
+def _retire_legacy_default_admin() -> bool:
+    """Désactive l'ancien compte admin / admin123 des versions précédentes.
+
+    Seul un compte dont le mot de passe est resté celui d'origine est touché, et
+    seulement si un autre super_admin actif existe (sinon plus personne ne
+    pourrait se connecter). Le mot de passe est rendu inutilisable.
+    """
+    import uuid as uuid_mod
+    from datetime import datetime
+
+    import bcrypt
+    from sync.models import RemoteUser
+
+    legacy = RemoteUser.objects.filter(identifiant="admin", actif=True).first()
+    if legacy is None:
+        return False
+    try:
+        still_default = bcrypt.checkpw(b"admin123", legacy.password_hash.encode("utf-8"))
+    except ValueError:  # hash illisible : ce n'est pas le mot de passe d'origine
+        still_default = False
+    if not still_default:
+        return False
+    if not RemoteUser.objects.filter(role="super_admin", actif=True).exclude(pk=legacy.pk).exists():
+        print(">> ATTENTION : le compte admin / admin123 est le seul administrateur ; "
+              "créez-en un autre puis relancez pour le retirer.")
+        return False
+    legacy.actif = False
+    legacy.password_hash = bcrypt.hashpw(
+        uuid_mod.uuid4().hex.encode("utf-8"), bcrypt.gensalt()
+    ).decode("utf-8")
+    legacy.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    legacy.save()
+    print(">> Ancien compte par défaut admin / admin123 désactivé.")
+    return True
+
+
 def main() -> int:
     # Console Windows souvent en cp1252 : force UTF-8 pour les messages
     # (coches, accents) sans faire planter le démarrage.
@@ -464,10 +500,13 @@ def main() -> int:
         except Exception as e:  # réseau indisponible : on continue, sync reprendra
             print(f"Sync initiale impossible ({type(e).__name__}), démarrage hors-ligne.")
 
-    # --- Compte super_admin par défaut (uniquement si la base est vierge) ---
-    if not RemoteUser.objects.filter(role="super_admin", actif=True).exists():
-        call_command("createwebadmin", "admin", "admin123")
-        print(">> Compte par défaut créé : admin / admin123 (changez-le !)")
+    # --- Ancien compte par défaut admin / admin123 : retiré s'il existe encore ---
+    # Plus aucun compte n'est créé d'office : ils viennent du serveur par la
+    # synchronisation (ou de `manage.py createwebadmin <identifiant> <mot de passe>`).
+    _retire_legacy_default_admin()
+    if not RemoteUser.objects.filter(actif=True).exists():
+        print(">> Aucun compte pour l'instant : ils seront récupérés depuis le serveur "
+              "en ligne par la synchronisation.")
 
     # --- Jeton de synchronisation pour le poste local -------------------
     device, _ = Device.objects.get_or_create(name="Poste-local")

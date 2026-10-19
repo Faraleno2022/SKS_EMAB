@@ -109,11 +109,14 @@ def main() -> int:
 
     try:
         init_database()
-        user_service.ensure_super_admin()
+        user_service.retire_legacy_default_admin()
     except Exception as e:
         traceback.print_exc()
         QMessageBox.critical(None, "Erreur d'initialisation", str(e))
         return 1
+    # Plus de compte créé d'office : sur un poste neuf, les comptes viennent du
+    # serveur par la synchronisation (sync_config.json ou Administration → Synchronisation).
+    no_account_yet = not user_service.has_active_user()
 
     # Fichier `sync_config.json` déposé à côté de l'application ? On l'applique
     # (URL serveur, jeton, nom du poste) puis on le renomme. Une erreur de
@@ -131,6 +134,15 @@ def main() -> int:
             f"{e}\n\n"
             "Corrigez-le ou configurez la synchronisation dans "
             "Administration → Synchronisation.",
+        )
+
+    if no_account_yet:
+        QMessageBox.information(
+            None, "Aucun compte",
+            "Aucun compte n'existe encore sur ce poste.\n\n"
+            "Les comptes sont récupérés depuis le serveur par la synchronisation : "
+            "déposez le fichier sync_config.json à côté de l'application, "
+            "puis relancez-la (le poste doit être connecté à Internet).",
         )
 
     # Sauvegarde planifiée : exécutée au démarrage si la périodicité est échue.
