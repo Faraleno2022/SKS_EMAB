@@ -2,7 +2,7 @@
 ; Compiler : ISCC.exe installer_console_web.iss
 ; (nécessite server\dist\EMAB-Console-Web.exe, produit par PyInstaller)
 
-#define MyAppName "EMAB Console Web"
+#define MyAppName "EMAB - SKS Console Web"
 #define MyAppPublisher "EMAB - SKS"
 #define MyAppVersion "1.0.43"
 #define MyAppExeName "EMAB-Console-Web.exe"

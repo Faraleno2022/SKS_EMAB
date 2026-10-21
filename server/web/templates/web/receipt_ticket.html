@@ -47,7 +47,7 @@
 </head>
 <body>
   <div class="toolbar">
-    {% if direct_url %}<a href="{{ direct_url }}" title="Envoie le ticket à l'imprimante de ce poste (EMAB Console Web 1.0.38 ou plus récente)">⚡ Impression directe</a>{% endif %}
+    {% if direct_url %}<a href="{{ direct_url }}" title="Envoie le ticket à l'imprimante de ce poste (EMAB - SKS Console Web 1.0.38 ou plus récente)">⚡ Impression directe</a>{% endif %}
     <button class="print" onclick="emabPrint(false)">🖨️ Imprimer</button>
     <div id="emabStatus" style="margin-top:6px;font-size:12px;"></div>
     <a href="?kind={{ kind }}&w={% if width == '58' %}80{% else %}58{% endif %}{% if auto %}&auto=1{% endif %}">

@@ -20,12 +20,12 @@ from web import printers
 
 def sample_kwargs(**over):
     kw = {
-        "company": {"name": "EMAB-SKS", "address": "Conakry", "phone": "+224 600"},
+        "company": {"name": "EMAB - SKS", "address": "Conakry", "phone": "+224 600"},
         "title": "REÇU DE DÉPÔT", "number": "N° 12", "date": "2026-10-18 09:00:00",
         "info_rows": [["Matricule", "M-001"], ["Tél.", ""], ["Agent", "Admin"]],
         "items": [], "balance_before": "1 000 GNF", "action_label": "DÉPÔT",
         "action_value": "+5 000 GNF", "balance_after": "6 000 GNF",
-        "footer": ["Merci de votre confiance", "EMAB-SKS"], "paper_width": "80",
+        "footer": ["Merci de votre confiance", "EMAB - SKS"], "paper_width": "80",
     }
     kw.update(over)
     return kw

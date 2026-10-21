@@ -166,7 +166,7 @@ foreach ($f in @("print_config.json", "print_config.applied.json")) {
 }
 $consoleCfg = Join-Path $consoleDir "printer_config.json"
 if (Test-Path $consoleCfg) { Say ("Console web locale (printer_config.json) : " + ((Get-Content $consoleCfg -Raw) -replace "\s+", " ").Trim()) }
-if (-not (Test-Path $appDir)) { Say "Dossier de l'application introuvable : EMAB Gestionnaire n'a jamais ete lance sur ce compte Windows." }
+if (-not (Test-Path $appDir)) { Say "Dossier de l'application introuvable : EMAB - SKS Gestionnaire n'a jamais ete lance sur ce compte Windows." }
 
 $names = @($printers | Select-Object -ExpandProperty Name)
 $selected = $null
@@ -201,10 +201,10 @@ try {
     $ver = $key.DisplayVersion
 } catch {}
 if ($ver) {
-    Say ("EMAB Gestionnaire installe : version " + $ver)
-    try { if ([version]$ver -lt [version]"1.1.14") { Problem "Version trop ancienne : avant la 1.1.14, l'application n'imprime PAS directement sur l'imprimante a tickets. Ouvrez EMAB Gestionnaire (mise a jour telechargee au demarrage, installee au demarrage suivant) ou installez la derniere version depuis la page des releases." } } catch {}
+    Say ("EMAB - SKS Gestionnaire installe : version " + $ver)
+    try { if ([version]$ver -lt [version]"1.1.14") { Problem "Version trop ancienne : avant la 1.1.14, l'application n'imprime PAS directement sur l'imprimante a tickets. Ouvrez EMAB - SKS Gestionnaire (mise a jour telechargee au demarrage, installee au demarrage suivant) ou installez la derniere version depuis la page des releases." } } catch {}
 } else {
-    Say "EMAB Gestionnaire : version non trouvee (non installe pour ce compte Windows ?)."
+    Say "EMAB - SKS Gestionnaire : version non trouvee (non installe pour ce compte Windows ?)."
 }
 
 # ---------------------------------------------------------- 6. File d'attente

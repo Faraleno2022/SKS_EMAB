@@ -175,7 +175,7 @@ def _message_box(text: str) -> None:
         return
     try:
         import ctypes
-        ctypes.windll.user32.MessageBoxW(0, text, "EMAB-SKS - Impression du ticket", 0x10)
+        ctypes.windll.user32.MessageBoxW(0, text, "EMAB - SKS - Impression du ticket", 0x10)
     except Exception:
         pass
 

@@ -38,7 +38,7 @@ UPDATES_DIR = "updates"
 # Identifie l'installateur de la console parmi les fichiers d'une release.
 ASSET_HINT = "Console-Web-Setup"
 
-# --- Application bureau « EMAB Gestionnaire » -------------------------------
+# --- Application bureau « EMAB - SKS Gestionnaire » -------------------------------
 # La console installe aussi le Gestionnaire sur le poste : ses versions sont
 # publiées sous le tag « desktop-vX.Y.Z » avec un installateur dont le nom
 # contient « Gestionnaire-Setup ». L'installateur crée son propre raccourci
