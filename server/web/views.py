@@ -2779,14 +2779,14 @@ def build_device_setup_script(server_url: str, device: "Device", generated_at: s
     name = _cmd_safe(device.name)
     lines = [
         "@echo off",
-        f"rem SKS-EMAB - Configuration de la synchronisation du poste \"{name}\"",
+        f"rem EMAB - SKS - Configuration de la synchronisation du poste \"{name}\"",
         f"rem Genere depuis {server_url}/postes/ le {generated_at}.",
         "rem Double-cliquez sur ce fichier sur le PC de caisse : il configure",
         "rem EMAB Gestionnaire (et la console web locale si elle est installee),",
         "rem puis lance l'application. Ce fichier contient le jeton du poste :",
         "rem ne le partagez pas et supprimez-le apres usage.",
         "setlocal",
-        "title Configuration de la synchronisation SKS-EMAB",
+        "title Configuration de la synchronisation EMAB - SKS",
         f'set "SERVER={server_url}"',
         f'set "TOKEN={device.token}"',
         f'set "NAME={name}"',

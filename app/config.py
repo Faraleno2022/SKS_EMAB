@@ -5,11 +5,11 @@ import os
 import sys
 from pathlib import Path
 
-APP_NAME = "SKS-EMAB — Gestionnaire Dépôt / Retrait"
+APP_NAME = "EMAB - SKS — Gestionnaire Dépôt / Retrait"
 # Version de l'app desktop. À INCRÉMENTER à chaque release publiée sur GitHub
 # (tag « desktop-vX.Y.Z » + installateur ; reporter la valeur dans installer.iss).
 APP_VERSION = "1.1.18"
-ORG_NAME = "SKS-EMAB"
+ORG_NAME = "EMAB - SKS"
 
 IS_FROZEN = bool(getattr(sys, "frozen", False))
 

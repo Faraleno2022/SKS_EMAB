@@ -21,7 +21,7 @@ from typing import Optional
 
 from sync.models import WebSetting
 
-BRAND = "SKS-EMAB"
+BRAND = "EMAB - SKS"
 
 DEFAULTS = {
     "company_name": BRAND,

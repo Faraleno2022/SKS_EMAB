@@ -23,7 +23,7 @@ import urllib.request
 from pathlib import Path
 
 # Dépôt public où sont publiées les versions (onglet « Releases » sur GitHub).
-# Ligne client 2 (SKS-EMAB) : releases publiées sur SKS_EMAB. Lors des fusions
+# Ligne client 2 (EMAB - SKS) : releases publiées sur SKS_EMAB. Lors des fusions
 # de legacy/main, garder cette valeur (le client 1 lit l'ancien dépôt).
 GITHUB_REPO = "Faraleno2022/SKS_EMAB"
 API_LATEST = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"

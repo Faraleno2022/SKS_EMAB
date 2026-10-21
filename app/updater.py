@@ -19,7 +19,7 @@ import hashlib
 import urllib.request
 from pathlib import Path
 
-# Ligne client 2 (SKS-EMAB) : releases publiées sur SKS_EMAB. Lors des fusions
+# Ligne client 2 (EMAB - SKS) : releases publiées sur SKS_EMAB. Lors des fusions
 # de legacy/main, garder cette valeur (le client 1 lit l'ancien dépôt).
 GITHUB_REPO = "Faraleno2022/SKS_EMAB"
 # Liste des releases (inclut les pré-releases, contrairement à /latest).
