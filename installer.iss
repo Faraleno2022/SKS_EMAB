@@ -4,7 +4,7 @@
 
 #define MyAppName "SKS-EMAB Gestionnaire"
 #define MyAppPublisher "SKS-EMAB"
-#define MyAppVersion "1.1.18"
+#define MyAppVersion "1.1.19"
 #define MyAppExeName "EMAB-Gestionnaire.exe"
 
 [Setup]
