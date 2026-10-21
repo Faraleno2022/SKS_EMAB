@@ -2,7 +2,7 @@
 ; Compiler : ISCC.exe installer.iss   (nécessite dist\EMAB-Gestionnaire.exe,
 ; produit par : python -m PyInstaller EMAB-Gestionnaire.spec)
 
-#define MyAppName "EMAB Gestionnaire"
+#define MyAppName "SKS-EMAB Gestionnaire"
 #define MyAppPublisher "SKS-EMAB"
 #define MyAppVersion "1.1.16"
 #define MyAppExeName "EMAB-Gestionnaire.exe"

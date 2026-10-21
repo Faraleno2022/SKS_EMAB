@@ -466,7 +466,7 @@ def main() -> int:
             desktop = check_and_install_desktop(data_dir)
             if desktop:
                 print(f"[MAJ] Gestionnaire bureau {desktop} installé — "
-                      f"raccourci « EMAB Gestionnaire » créé sur le Bureau.")
+                      f"raccourci « SKS-EMAB Gestionnaire » créé sur le Bureau.")
         except Exception:
             pass
     threading.Thread(target=_check_update, daemon=True).start()

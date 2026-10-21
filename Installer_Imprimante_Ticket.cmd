@@ -7,7 +7,7 @@ rem
 rem  Double-cliquez : Windows demande les droits administrateur,
 rem  l'imprimante est installee (pilote constructeur deja present
 rem  ou pilote Windows "Generic / Text Only"), les reglages sont
-rem  ecrits pour EMAB Gestionnaire et un ticket de test est imprime.
+rem  ecrits pour SKS-EMAB Gestionnaire et un ticket de test est imprime.
 rem
 rem  CE FICHIER SE SUFFIT A LUI-MEME : le script PowerShell est
 rem  embarque ci-dessous. Copiez-le seul sur le poste de caisse.
@@ -30,7 +30,7 @@ endlocal & exit /b %ERRORLEVEL%
 #   1. demande les droits administrateur (necessaires pour installer un pilote) ;
 #   2. detecte une imprimante a tickets deja installee (pilote Epson "Receipt", POS...) ;
 #   3. sinon, installe l'imprimante USB avec le pilote Windows "Generic / Text Only",
-#      qui suffit a EMAB Gestionnaire (impression ESC/POS directe) ;
+#      qui suffit a SKS-EMAB Gestionnaire (impression ESC/POS directe) ;
 #   4. ecrit les reglages d'impression pour l'application (print_config.json) ;
 #   5. imprime un ticket de test ESC/POS.
 #
@@ -161,7 +161,7 @@ if ($newDev) {
     Write-Host "[OK] Imprimante '$PrinterName' installee sur $port."
 }
 
-# ------------------------------------------ 4. Reglages pour EMAB Gestionnaire
+# ------------------------------------------ 4. Reglages pour SKS-EMAB Gestionnaire
 $appDir = Join-Path $env:LOCALAPPDATA "EMAB GROUP\Gestionnaire"
 New-Item -ItemType Directory -Force -Path $appDir | Out-Null
 $cfg = [ordered]@{
@@ -172,7 +172,7 @@ $cfg = [ordered]@{
 $cfgPath = Join-Path $appDir "print_config.json"
 [IO.File]::WriteAllText($cfgPath, ($cfg | ConvertTo-Json), (New-Object Text.UTF8Encoding $false))
 Write-Host "[OK] Reglages ecrits : $cfgPath"
-Write-Host "     (appliques au prochain demarrage d'EMAB Gestionnaire, version 1.1.14 ou plus)"
+Write-Host "     (appliques au prochain demarrage de SKS-EMAB Gestionnaire, version 1.1.14 ou plus)"
 
 # --------------------------------------------------------- 5. Ticket de test
 if (-not $NoTest) {
@@ -231,6 +231,6 @@ public class EmabRawPrint {
 }
 
 Write-Host ""
-Write-Host "Termine. Dans EMAB Gestionnaire : Administration > Impression des tickets"
+Write-Host "Termine. Dans SKS-EMAB Gestionnaire : Administration > Impression des tickets"
 Write-Host "pour verifier ou modifier (imprimante : $chosen, papier : $PaperWidth mm)."
 Pause-Exit 0
