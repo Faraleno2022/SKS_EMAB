@@ -27,14 +27,26 @@ def main() -> int:
     from app.services import user_service, transaction_service, auth_service, backup_service
     from app.models.user import User
 
-    # 1. ensure_super_admin
-    user_service.ensure_super_admin()
-    admin = user_service.get_user_by_identifiant("admin")
-    assert admin is not None and admin.role == "super_admin"
+    # 1. aucun compte créé d'office ; ancien admin/admin123 retiré s'il existe
+    assert not user_service.has_active_user()
+    assert user_service.get_user_by_identifiant("admin") is None
+    admin = user_service.create_user("testadmin", "Test#2026", "Admin Test", "super_admin")
+    assert admin.role == "super_admin"
     print(f"OK super-admin créé : {admin.identifiant}")
+    legacy = user_service.create_user("admin", "admin123", "Ancien admin", "super_admin")
+    assert user_service.retire_legacy_default_admin() is True
+    assert not user_service.get_user(legacy.id).actif
+    try:
+        auth_service.login("admin", "admin123")
+        raise AssertionError("l'ancien admin/admin123 peut encore se connecter")
+    except AssertionError:
+        raise
+    except Exception:
+        pass
+    print("OK ancien admin/admin123 désactivé")
 
     # 2. login
-    u = auth_service.login("admin", "admin123")
+    u = auth_service.login("testadmin", "Test#2026")
     assert u.id == admin.id
     print("OK login admin")
 

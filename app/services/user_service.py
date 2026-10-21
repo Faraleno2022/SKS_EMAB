@@ -3,46 +3,58 @@ from __future__ import annotations
 
 from typing import List, Optional
 
-from app.config import DEFAULT_SUPER_ADMIN, ROLES
+from app.config import ROLES
 from app.db.database import get_connection, transaction as db_transaction
 from app.models.user import User
 from app.services import audit_service, auth_service
 from app.utils.helpers import new_uuid, now_iso
-from app.utils.security import hash_password
+from app.utils.security import hash_password, verify_password
+
+# Ancien compte créé d'office par les versions précédentes (voir retire_legacy_default_admin).
+_LEGACY_ADMIN_LOGIN = "admin"
+_LEGACY_ADMIN_PASSWORD = "admin123"
 
 
 class UserServiceError(Exception):
     pass
 
 
-def ensure_super_admin() -> None:
-    """Crée un super-admin par défaut si aucun n'existe."""
+def retire_legacy_default_admin() -> bool:
+    """Désactive l'ancien compte par défaut `admin` / `admin123` s'il existe encore.
+
+    Les anciennes versions le créaient d'office. Seul un compte dont le mot de
+    passe est toujours celui d'origine est touché, et seulement si un autre
+    super-administrateur actif existe (sinon on se retrouverait sans accès).
+    Le mot de passe est aussi rendu inutilisable pour qu'une réactivation
+    ne rende pas `admin123` valide.
+    """
     conn = get_connection()
     row = conn.execute(
-        "SELECT COUNT(*) AS n FROM users WHERE role = 'super_admin'"
+        "SELECT id, password_hash FROM users WHERE identifiant = ? AND actif = 1",
+        (_LEGACY_ADMIN_LOGIN,),
     ).fetchone()
-    if row["n"] > 0:
-        return
-    now = now_iso()
+    if row is None or not verify_password(_LEGACY_ADMIN_PASSWORD, row["password_hash"]):
+        return False
+    other = conn.execute(
+        "SELECT COUNT(*) AS n FROM users WHERE role = 'super_admin' AND actif = 1 AND id != ?",
+        (row["id"],),
+    ).fetchone()
+    if other["n"] == 0:
+        return False
     conn.execute(
-        """INSERT INTO users (uuid, identifiant, password_hash, nom_complet, matricule, telephone,
-                              role, actif, created_at, updated_at, sync_status)
-           VALUES (?,?,?,?,?,?,?,?,?,?,?)""",
-        (
-            new_uuid(),
-            DEFAULT_SUPER_ADMIN["identifiant"],
-            hash_password(DEFAULT_SUPER_ADMIN["password"]),
-            DEFAULT_SUPER_ADMIN["nom_complet"],
-            DEFAULT_SUPER_ADMIN["matricule"],
-            DEFAULT_SUPER_ADMIN["telephone"],
-            DEFAULT_SUPER_ADMIN["role"],
-            1,
-            now,
-            now,
-            "pending",
-        ),
+        "UPDATE users SET actif = 0, password_hash = ?, updated_at = ?, sync_status = 'pending' "
+        "WHERE id = ?",
+        (hash_password(new_uuid()), now_iso(), row["id"]),
     )
     conn.commit()
+    return True
+
+
+def has_active_user() -> bool:
+    row = get_connection().execute(
+        "SELECT COUNT(*) AS n FROM users WHERE actif = 1"
+    ).fetchone()
+    return row["n"] > 0
 
 
 def list_users(role: Optional[str] = None, include_inactive: bool = True) -> List[User]:

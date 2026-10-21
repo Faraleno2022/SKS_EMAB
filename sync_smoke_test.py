@@ -59,8 +59,8 @@ def main() -> int:
     )
 
     # Données : admin, caissier, transactions, produit, vente
-    user_service.ensure_super_admin()
-    auth_service.login("admin", "admin123")
+    user_service.create_user("testadmin", "Test#2026", "Admin Test", "super_admin")
+    auth_service.login("testadmin", "Test#2026")
     cais = user_service.create_user("c1", "p", "Caissier Test", "caissier")
     transaction_service.create_transaction("MAT-1", "700", "depot", 5000, cais)
     transaction_service.create_transaction("MAT-1", "700", "retrait", 1000, cais)

@@ -4,7 +4,7 @@
 
 #define MyAppName "SKS-EMAB Console Web"
 #define MyAppPublisher "SKS-EMAB"
-#define MyAppVersion "1.0.38"
+#define MyAppVersion "1.0.43"
 #define MyAppExeName "EMAB-Console-Web.exe"
 
 [Setup]

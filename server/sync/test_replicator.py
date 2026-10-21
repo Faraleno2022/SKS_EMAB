@@ -7,7 +7,7 @@ from django.utils import timezone
 from sync.business_rules import RECENT_ALERT_DAYS, business_day, day_offset
 from sync.deposit_limits import get_deposit_warnings
 from sync.models import Product, Transaction
-from sync.replicator import Replicator, ReplicationError
+from sync.replicator import MissingReferenceError, Replicator, ReplicationError
 
 
 class ReplicatorTests(TestCase):
@@ -32,6 +32,35 @@ class ReplicatorTests(TestCase):
             self.assertEqual(self.rep._push_table("products"), 3)
         self.assertEqual([len(c.kwargs["json"]["records"]) for c in post.call_args_list], [2, 1])
         self.assertEqual(self.rep.state["push_products_uuid"], "p2")
+
+    def test_cycle_resends_catalog_when_server_lost_it(self):
+        product = self.product()
+        self.rep.state.update(push_products=product.received_at.isoformat(), push_products_uuid=product.uuid)
+        absent = Mock(status_code=400, text='{"detail":"Lot rejeté : Produit absent : synchronisez le catalogue avant ses mouvements."}')
+        calls = []
+        def post(url, json, **kwargs):
+            calls.append(json["table"])
+            if json["table"] == "stock_movements" and calls.count("products") == 0:
+                return absent
+            return self.response({"skipped": 0})
+        from sync.models import StockMovement
+        StockMovement.objects.create(uuid="m1", product_id=1, product_uuid=product.uuid, product_nom="P", type="entree", quantite=1, stock_apres=1, created_at="2026-10-19")
+        with patch("sync.replicator.requests.post", side_effect=post),                 patch("sync.replicator.requests.get", return_value=self.response({"records": [], "has_more": False})):
+            summary = self.rep.run_once()
+        self.assertEqual(calls.count("products"), 1)   # envoyé après le rejet
+        self.assertEqual(calls.count("stock_movements"), 2)
+        self.assertEqual(summary["products"]["pushed"], 1)
+
+    def test_missing_reference_after_resend_is_reported(self):
+        self.product()
+        absent = Mock(status_code=400, text="Lot rejeté : Produit absent : synchronisez le catalogue avant ses mouvements.")
+        from sync.models import StockMovement
+        StockMovement.objects.create(uuid="m1", product_id=9, product_uuid="inconnu", product_nom="P", type="entree", quantite=1, stock_apres=1, created_at="2026-10-19")
+        def post(url, json, **kwargs):
+            return absent if json["table"] == "stock_movements" else self.response({"skipped": 0})
+        with patch("sync.replicator.requests.post", side_effect=post):
+            with self.assertRaises(MissingReferenceError):
+                self.rep.run_once()
 
     def test_failed_push_does_not_advance_state(self):
         self.product()

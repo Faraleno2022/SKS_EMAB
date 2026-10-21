@@ -350,15 +350,17 @@
         </table>
 
         <div class="d-grid gap-2">
-          <a href="{% url 'web:print_ticket' %}?kind=retrait&auto=1" target="_blank" class="btn btn-dark">
-            <i class="bi bi-printer"></i> Imprimer le ticket (caisse)
-          </a>
+          {# Impression directe d'abord : par le navigateur, le pilote « Generic / Text Only » n'imprime que du texte brut. #}
           {% if direct_print_url %}
-            <a href="{{ direct_print_url }}" class="btn btn-outline-dark"
+            <a href="{{ direct_print_url }}" class="btn btn-dark"
                title="Envoie le ticket à l'imprimante de ce poste (SKS-EMAB Console Web 1.0.38 ou plus récente installée)">
               <i class="bi bi-printer-fill"></i> Imprimer (direct, poste équipé)
             </a>
           {% endif %}
+          <a href="{% url 'web:print_ticket' %}?kind=retrait&auto=1" target="_blank"
+             class="btn {% if direct_print_url %}btn-outline-dark{% else %}btn-dark{% endif %}">
+            <i class="bi bi-printer"></i> Imprimer le ticket (caisse)
+          </a>
           {% if auto_print_kind %}
             <iframe src="{% url 'web:print_ticket' %}?kind={{ auto_print_kind }}&auto=1"
                     title="Ticket" style="position:fixed;width:0;height:0;border:0;"></iframe>

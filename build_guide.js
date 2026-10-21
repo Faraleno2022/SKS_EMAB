@@ -139,17 +139,12 @@ children.push(h2("Lancer l'application"));
 children.push(step("Ouvrez le dossier de l'application."));
 children.push(step("Si nécessaire, installez les dépendances : **pip install -r requirements.txt**."));
 children.push(step("Lancez l'application : **python main.py**."));
-children.push(note("Au tout premier démarrage, la base de données et le compte administrateur par défaut sont créés automatiquement."));
+children.push(note("Au tout premier démarrage, la base de données est créée automatiquement. Aucun compte n'est créé d'office : les comptes viennent du serveur par la synchronisation."));
 
 // 3. Connexion et rôles
 children.push(h1("3. Connexion et rôles"));
 children.push(h2("Première connexion"));
-children.push(p("Un compte super-administrateur est créé automatiquement :"));
-children.push(infoTable([
-  ["Identifiant", "**admin**"],
-  ["Mot de passe", "**admin123**"],
-], ["Champ", "Valeur"], [3000, 6360]));
-children.push(note("Pour des raisons de sécurité, changez ce mot de passe par défaut dès la première connexion (menu Administrateurs ou Utilisateurs)."));
+children.push(p("Aucun compte par défaut n'existe. Connectez-vous avec le compte fourni par votre administrateur, récupéré depuis le serveur par la synchronisation."));
 children.push(h2("Les rôles et leurs droits"));
 children.push(infoTable([
   ["Caissier", "Saisie des dépôts/retraits, ventes, consultation des clients et rapports."],

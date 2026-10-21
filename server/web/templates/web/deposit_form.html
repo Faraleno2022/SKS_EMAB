@@ -63,8 +63,10 @@
       </div>
 
       <div class="text-muted small mb-3">
-        Enregistré par : <strong>{{ remote.nom_complet|default:remote.identifiant }}</strong>
-        ({{ remote.role }})
+        {# firstof et non |default:remote.identifiant : un argument de filtre absent #}
+        {# lève une erreur (500) quand le compte n'a pas de fiche poste en session. #}
+        Enregistré par : <strong>{% firstof remote.nom_complet remote.identifiant user.username %}</strong>
+        {% if remote.role %}({{ remote.role }}){% endif %}
       </div>
 
       <button type="submit" class="btn btn-success btn-lg">
@@ -162,15 +164,17 @@
           <tr><th>Agent</th><td>{{ last_receipt.agent_nom }}</td></tr>
         </table>
         <div class="d-grid gap-2">
-          <a href="{% url 'web:print_ticket' %}?kind=depot&auto=1" target="_blank" class="btn btn-dark btn-sm">
-            <i class="bi bi-printer"></i> Imprimer le ticket (caisse)
-          </a>
+          {# Impression directe d'abord : par le navigateur, le pilote « Generic / Text Only » n'imprime que du texte brut. #}
           {% if direct_print_url %}
-            <a href="{{ direct_print_url }}" class="btn btn-outline-dark btn-sm"
+            <a href="{{ direct_print_url }}" class="btn btn-dark btn-sm"
                title="Envoie le ticket à l'imprimante de ce poste (SKS-EMAB Console Web 1.0.38 ou plus récente installée)">
               <i class="bi bi-printer-fill"></i> Imprimer (direct, poste équipé)
             </a>
           {% endif %}
+          <a href="{% url 'web:print_ticket' %}?kind=depot&auto=1" target="_blank"
+             class="btn {% if direct_print_url %}btn-outline-dark{% else %}btn-dark{% endif %} btn-sm">
+            <i class="bi bi-printer"></i> Imprimer le ticket (caisse)
+          </a>
           {% if auto_print_kind %}
             {% comment %}Impression automatique (Administration → Impression des tickets) :
             le ticket se charge dans un cadre invisible et se lance à l'impression, sans popup.{% endcomment %}

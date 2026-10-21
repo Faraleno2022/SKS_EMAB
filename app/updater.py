@@ -19,7 +19,9 @@ import hashlib
 import urllib.request
 from pathlib import Path
 
-GITHUB_REPO = "Faraleno2022/C-Users-LENO-Desktop-Gestionnaire-depot_Retrait"
+# Ligne client 2 (SKS-EMAB) : releases publiées sur SKS_EMAB. Lors des fusions
+# de legacy/main, garder cette valeur (le client 1 lit l'ancien dépôt).
+GITHUB_REPO = "Faraleno2022/SKS_EMAB"
 # Liste des releases (inclut les pré-releases, contrairement à /latest).
 API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases?per_page=30"
 

@@ -29,7 +29,7 @@ Cela produit `dist\EMAB-Console-Web-Setup-1.0.1.exe`.
 Deux méthodes — la plus simple d'abord.
 
 **A. Par le site GitHub (sans rien installer)**
-1. Va sur `https://github.com/Faraleno2022/C-Users-LENO-Desktop-Gestionnaire-depot_Retrait/releases`
+1. Va sur `https://github.com/Faraleno2022/SKS_EMAB/releases`
 2. Clique **Draft a new release**
 3. **Tag** : `v1.0.1` (le « v » est optionnel mais recommandé)
 4. **Title** : `1.0.1`
@@ -38,7 +38,7 @@ Deux méthodes — la plus simple d'abord.
 
 **B. En ligne de commande (si `gh` est installé)**
 ```
-gh release create v1.0.1 "dist/EMAB-Console-Web-Setup-1.0.1.exe" --title "1.0.1" --notes "Nouvelles fonctionnalités"
+gh release create v1.0.1 --repo Faraleno2022/SKS_EMAB "dist/EMAB-Console-Web-Setup-1.0.1.exe" --title "1.0.1" --notes "Nouvelles fonctionnalités"
 ```
 
 ### 4. C'est tout
@@ -72,7 +72,7 @@ l'installation est simplement reportée au prochain démarrage de la console.
    obligatoire), cochée **pre-release** pour ne pas perturber `/releases/latest`
    utilisé par la console :
    ```
-   gh release create desktop-v1.1.1 "dist/EMAB-Gestionnaire-Setup-1.1.1.exe" --title "Gestionnaire 1.1.1" --prerelease --notes "..."
+   gh release create desktop-v1.1.1 --repo Faraleno2022/SKS_EMAB "dist/EMAB-Gestionnaire-Setup-1.1.1.exe" --title "Gestionnaire 1.1.1" --prerelease --notes "..."
    ```
 4. Le nom de l'installateur doit contenir **`Gestionnaire-Setup`** (nom par
    défaut : rien à changer).

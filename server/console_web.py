@@ -31,7 +31,7 @@ from pathlib import Path
 # Version de la console. À INCRÉMENTER à chaque nouvelle release publiée sur
 # GitHub (et reporter la même valeur dans MyAppVersion de installer_console_web.iss).
 # C'est ce numéro que l'updater compare à la dernière release pour décider d'une MAJ.
-APP_VERSION = "1.0.38"
+APP_VERSION = "1.0.43"
 
 PORT = int(os.environ.get("EMAB_WEB_PORT", "8765"))
 HOST = os.environ.get("EMAB_WEB_HOST", "127.0.0.1")
@@ -165,6 +165,33 @@ def _find_chrome() -> str:
     return shutil.which("chrome") or ""
 
 
+def _find_edge() -> str:
+    """Chemin de msedge.exe (présent d'office sous Windows 10/11), sinon ''."""
+    import shutil
+    candidates = [
+        os.path.expandvars(r"%ProgramFiles(x86)%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%ProgramFiles%\Microsoft\Edge\Application\msedge.exe"),
+        os.path.expandvars(r"%LOCALAPPDATA%\Microsoft\Edge\Application\msedge.exe"),
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
+    return shutil.which("msedge") or ""
+
+
+def _find_app_browser() -> tuple[str, str]:
+    """(exécutable, nom du dossier de profil) d'un navigateur Chromium capable
+    d'ouvrir l'interface dans sa propre fenêtre (--app). Chrome d'abord, puis
+    Edge ; ('', '') si aucun des deux."""
+    chrome = _find_chrome()
+    if chrome:
+        return chrome, "ChromeCaisse"
+    edge = _find_edge()
+    if edge:
+        return edge, "EdgeCaisse"
+    return "", ""
+
+
 def _printers_module():
     """Module web.printers (détection, ESC/POS), aussi importable depuis la
     racine du dépôt (tests) : on ajoute alors le dossier server au chemin."""
@@ -248,19 +275,20 @@ def _seed_kiosk_printer(profile_dir: str) -> None:
 
 
 def _open_ui(url: str, data_dir: Path) -> None:
-    """Ouvre l'interface. Avec Chrome : mode caisse (impression directe du
-    ticket, sans boîte de dialogue). Sinon : navigateur par défaut."""
+    """Ouvre l'interface dans sa propre fenêtre (sans onglets ni barre d'adresse)
+    avec Chrome ou, à défaut, Edge : mode caisse (impression directe du ticket,
+    sans boîte de dialogue). Sans aucun des deux : navigateur par défaut."""
     import subprocess
-    chrome = _find_chrome()
-    if chrome:
-        profile = str(data_dir / "ChromeCaisse")
+    browser, profile_name = _find_app_browser()
+    if browser:
+        profile = str(data_dir / profile_name)
         _seed_kiosk_printer(profile)
         try:
             subprocess.Popen([
-                chrome,
+                browser,
                 "--kiosk-printing",            # window.print() imprime directement
                 f"--app={url}",                # fenêtre épurée, sans barre d'adresse
-                f"--user-data-dir={profile}",  # profil dédié, isolé du Chrome habituel
+                f"--user-data-dir={profile}",  # profil dédié, isolé du navigateur habituel
                 "--no-first-run",
                 "--no-default-browser-check",
             ])
@@ -295,6 +323,42 @@ def _apply_pending_update(data_dir: Path) -> bool:
         return False  # uniquement en .exe (pas en développement)
     from updater import apply_pending_update
     return apply_pending_update(data_dir, sys.executable)
+
+
+def _retire_legacy_default_admin() -> bool:
+    """Désactive l'ancien compte admin / admin123 des versions précédentes.
+
+    Seul un compte dont le mot de passe est resté celui d'origine est touché, et
+    seulement si un autre super_admin actif existe (sinon plus personne ne
+    pourrait se connecter). Le mot de passe est rendu inutilisable.
+    """
+    import uuid as uuid_mod
+    from datetime import datetime
+
+    import bcrypt
+    from sync.models import RemoteUser
+
+    legacy = RemoteUser.objects.filter(identifiant="admin", actif=True).first()
+    if legacy is None:
+        return False
+    try:
+        still_default = bcrypt.checkpw(b"admin123", legacy.password_hash.encode("utf-8"))
+    except ValueError:  # hash illisible : ce n'est pas le mot de passe d'origine
+        still_default = False
+    if not still_default:
+        return False
+    if not RemoteUser.objects.filter(role="super_admin", actif=True).exclude(pk=legacy.pk).exists():
+        print(">> ATTENTION : le compte admin / admin123 est le seul administrateur ; "
+              "créez-en un autre puis relancez pour le retirer.")
+        return False
+    legacy.actif = False
+    legacy.password_hash = bcrypt.hashpw(
+        uuid_mod.uuid4().hex.encode("utf-8"), bcrypt.gensalt()
+    ).decode("utf-8")
+    legacy.updated_at = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    legacy.save()
+    print(">> Ancien compte par défaut admin / admin123 désactivé.")
+    return True
 
 
 def main() -> int:
@@ -436,10 +500,13 @@ def main() -> int:
         except Exception as e:  # réseau indisponible : on continue, sync reprendra
             print(f"Sync initiale impossible ({type(e).__name__}), démarrage hors-ligne.")
 
-    # --- Compte super_admin par défaut (uniquement si la base est vierge) ---
-    if not RemoteUser.objects.filter(role="super_admin", actif=True).exists():
-        call_command("createwebadmin", "admin", "admin123")
-        print(">> Compte par défaut créé : admin / admin123 (changez-le !)")
+    # --- Ancien compte par défaut admin / admin123 : retiré s'il existe encore ---
+    # Plus aucun compte n'est créé d'office : ils viennent du serveur par la
+    # synchronisation (ou de `manage.py createwebadmin <identifiant> <mot de passe>`).
+    _retire_legacy_default_admin()
+    if not RemoteUser.objects.filter(actif=True).exists():
+        print(">> Aucun compte pour l'instant : ils seront récupérés depuis le serveur "
+              "en ligne par la synchronisation.")
 
     # --- Jeton de synchronisation pour le poste local -------------------
     device, _ = Device.objects.get_or_create(name="Poste-local")

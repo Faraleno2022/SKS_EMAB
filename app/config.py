@@ -8,7 +8,7 @@ from pathlib import Path
 APP_NAME = "SKS-EMAB — Gestionnaire Dépôt / Retrait"
 # Version de l'app desktop. À INCRÉMENTER à chaque release publiée sur GitHub
 # (tag « desktop-vX.Y.Z » + installateur ; reporter la valeur dans installer.iss).
-APP_VERSION = "1.1.16"
+APP_VERSION = "1.1.18"
 ORG_NAME = "SKS-EMAB"
 
 IS_FROZEN = bool(getattr(sys, "frozen", False))
@@ -32,15 +32,6 @@ ASSETS_DIR = RESOURCE_DIR / "assets"
 DB_PATH = DATA_DIR / "gestionnaire.db"
 LOGO_PATH = ASSETS_DIR / "logo_emab.png"
 ICON_PATH = ASSETS_DIR / "logo_emab.ico"
-
-DEFAULT_SUPER_ADMIN = {
-    "identifiant": "admin",
-    "password": "admin123",
-    "nom_complet": "Super Administrateur",
-    "matricule": "ADM-000",
-    "telephone": "",
-    "role": "super_admin",
-}
 
 PAGE_SIZE = 50
 CURRENCY_SYMBOL = "GNF"

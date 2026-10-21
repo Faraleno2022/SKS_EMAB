@@ -184,6 +184,21 @@ class SitePagesTests(TestCase):
         self.assertIn("Tester l'impression directe", settings)
         self.assertEqual(pp.decode(self.link_in(settings))["title"], "TICKET DE TEST")
 
+    def test_online_direct_print_button_comes_first(self):
+        # En ligne, l'impression directe passe avant l'impression par le navigateur
+        # (texte brut seulement avec le pilote « Generic / Text Only »).
+        with patch.dict(os.environ, {"EMAB_LOCAL_CONSOLE": "0"}):
+            pages = {
+                "depot": (self.client.get(reverse("web:deposit_new")), "?kind=depot&auto=1"),
+                "retrait": (self.client.get(reverse("web:withdrawal_new")), "?kind=retrait&auto=1"),
+                "reglages": (self.client.get(reverse("web:ticket_settings")), "?kind=test&auto=1"),
+                "ticket": (self.client.get(reverse("web:print_ticket"), {"kind": "depot"}), "emabPrint(false)"),
+            }
+        for name, (page, browser_marker) in pages.items():
+            with self.subTest(page=name):
+                html = page.content.decode()
+                self.assertLess(html.index('href="emab-print:'), html.index(browser_marker))
+
     def test_local_console_has_no_emab_print_link(self):
         env = {"EMAB_LOCAL_CONSOLE": "1", "EMAB_RECEIPT_PRINTER": ""}
         with patch.dict(os.environ, env), \

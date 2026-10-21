@@ -41,8 +41,17 @@ BATCH = 200
 TIMEOUT = 30
 
 
+# Tables dont dépendent les mouvements et les ventes : si le serveur les a
+# perdues (base vidée), on les renvoie en entier.
+CATALOG_TABLES = ("users", "products", "clients")
+
+
 class ReplicationError(Exception):
     pass
+
+
+class MissingReferenceError(ReplicationError):
+    """Le serveur refuse un lot : le produit référencé n'existe pas chez lui."""
 
 
 class Replicator:
@@ -126,6 +135,10 @@ class Replicator:
             )
             if resp.status_code == 401:
                 raise ReplicationError("Jeton refusé par le serveur distant (401).")
+            if resp.status_code == 400 and "synchronisez le catalogue" in resp.text:
+                raise MissingReferenceError(
+                    f"Push {table} rejeté ({resp.status_code}) : {resp.text[:160]}"
+                )
             if resp.status_code not in (200, 201):
                 raise ReplicationError(
                     f"Push {table} rejeté ({resp.status_code}) : {resp.text[:160]}"
@@ -226,7 +239,19 @@ class Replicator:
         summary: Dict[str, dict] = {}
         # Envoyer tous les mouvements avant de recevoir les stocks calculés.
         for table in TABLE_ORDER:
-            pushed = self._push_table(table)
+            try:
+                pushed = self._push_table(table)
+            except MissingReferenceError:
+                # Le filigrane dit « catalogue déjà envoyé » mais le serveur ne
+                # l'a plus (base vidée ou autre base) : on le renvoie, puis on
+                # retente une fois. Un nouvel échec remonte à l'appelant.
+                for key in CATALOG_TABLES:
+                    self.state.pop(f"push_{key}", None)
+                    self.state.pop(f"push_{key}_uuid", None)
+                self._save_state()
+                for key in CATALOG_TABLES:
+                    summary[key]["pushed"] = summary[key].get("pushed", 0) + self._push_table(key)
+                pushed = self._push_table(table)
             summary[table] = {"pushed": pushed, "inserted": 0, "updated": 0}
         for table in TABLE_ORDER:
             ins, upd = self._pull_table(table)

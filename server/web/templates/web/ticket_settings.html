@@ -4,7 +4,11 @@
 {% block content %}
 <div class="d-flex flex-wrap align-items-center mb-3">
   <h1 class="h3 me-auto mb-2"><i class="bi bi-printer"></i> Impression des tickets</h1>
-  <a href="{% url 'web:print_ticket' %}?kind=test&auto=1" target="_blank" class="btn btn-dark btn-sm">
+  {% if direct_test_url %}
+    <a href="{{ direct_test_url }}" class="btn btn-dark btn-sm me-2 mb-2"><i class="bi bi-printer-fill"></i> Tester l'impression directe</a>
+  {% endif %}
+  <a href="{% url 'web:print_ticket' %}?kind=test&auto=1" target="_blank"
+     class="btn {% if direct_test_url %}btn-outline-dark{% else %}btn-dark{% endif %} btn-sm mb-2">
     <i class="bi bi-receipt"></i> Imprimer un ticket test
   </a>
 </div>
