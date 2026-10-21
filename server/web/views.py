@@ -2790,7 +2790,7 @@ def build_device_setup_script(server_url: str, device: "Device", generated_at: s
         f'set "NAME={name}"',
         'set "APPDIR=%LOCALAPPDATA%\\EMAB GROUP\\Gestionnaire"',
         'set "CONSOLEDIR=%LOCALAPPDATA%\\EMAB GROUP\\ConsoleWeb"',
-        'set "EXE=%LOCALAPPDATA%\\Programs\\SKS-EMAB Gestionnaire\\EMAB-Gestionnaire.exe"',
+        'set "EXE=%LOCALAPPDATA%\\Programs\\EMAB Gestionnaire\\EMAB-Gestionnaire.exe"',
         "echo.",
         f"echo  Poste   : {name}",
         "echo  Serveur : %SERVER%",
