@@ -4,7 +4,7 @@
 
 #define MyAppName "SKS-EMAB Gestionnaire"
 #define MyAppPublisher "SKS-EMAB"
-#define MyAppVersion "1.1.19"
+#define MyAppVersion "1.1.20"
 #define MyAppExeName "EMAB-Gestionnaire.exe"
 
 [Setup]
@@ -20,7 +20,7 @@ DisableProgramGroupPage=yes
 SetupIconFile=assets\logo_emab.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 OutputDir=dist
-OutputBaseFilename=EMAB-Gestionnaire-Setup-{#MyAppVersion}
+OutputBaseFilename=SKS-EMAB-Gestionnaire-Setup-{#MyAppVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -39,6 +39,10 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 ; renvoie « Server Error (500) »). Les donnees sont dans %LOCALAPPDATA%\EMAB GROUP,
 ; jamais dans {app} : rien a perdre ici.
 Type: filesandordirs; Name: "{app}\_internal"
+; Anciens raccourcis « EMAB Gestionnaire » (avant le nom SKS-EMAB) : evite les doublons
+Type: files; Name: "{userdesktop}\EMAB Gestionnaire.lnk"
+Type: files; Name: "{userprograms}\EMAB Gestionnaire.lnk"
+Type: files; Name: "{userprograms}\Désinstaller EMAB Gestionnaire.lnk"
 
 [Files]
 ; Mode onedir : on installe le dossier complet (démarrage rapide, pas

@@ -26,7 +26,7 @@ GITHUB_REPO = "Faraleno2022/SKS_EMAB"
 API_RELEASES = f"https://api.github.com/repos/{GITHUB_REPO}/releases?per_page=30"
 
 TAG_PREFIX = "desktop-v"          # tags des versions desktop
-ASSET_HINT = "Gestionnaire-Setup"  # identifie l'installateur desktop
+ASSET_HINT = "SKS-EMAB-Gestionnaire-Setup"  # identifie l'installateur desktop
 FLAG_NAME = "update_pending.flag"
 UPDATES_DIR = "updates"
 

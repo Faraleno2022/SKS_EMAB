@@ -11,7 +11,7 @@ from server import updater as console
 
 class UpdaterTests(unittest.TestCase):
     def asset(self, content=b"complete"):
-        return {"name": "EMAB-Gestionnaire-Setup-2.0.0.exe", "size": len(content),
+        return {"name": "SKS-EMAB-Gestionnaire-Setup-2.0.0.exe", "size": len(content),
                 "digest": "sha256:" + hashlib.sha256(content).hexdigest(),
                 "browser_download_url": "https://example.test/setup.exe"}
 

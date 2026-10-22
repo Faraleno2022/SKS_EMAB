@@ -4,7 +4,7 @@
 
 #define MyAppName "SKS-EMAB Console Web"
 #define MyAppPublisher "SKS-EMAB"
-#define MyAppVersion "1.0.44"
+#define MyAppVersion "1.0.45"
 #define MyAppExeName "EMAB-Console-Web.exe"
 
 [Setup]
@@ -19,7 +19,7 @@ DisableProgramGroupPage=yes
 SetupIconFile=assets\logo_emab.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 OutputDir=dist
-OutputBaseFilename=EMAB-Console-Web-Setup-{#MyAppVersion}
+OutputBaseFilename=SKS-EMAB-Console-Web-Setup-{#MyAppVersion}
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -45,6 +45,10 @@ Name: "startupicon"; Description: "Démarrer automatiquement avec Windows (synch
 ; renvoie « Server Error (500) »). Les donnees sont dans %LOCALAPPDATA%\EMAB GROUP,
 ; jamais dans {app} : rien a perdre ici.
 Type: filesandordirs; Name: "{app}\_internal"
+; Anciens raccourcis « EMAB Console Web » (avant le nom SKS-EMAB) : evite les doublons
+Type: files; Name: "{userdesktop}\EMAB Console Web.lnk"
+Type: files; Name: "{userprograms}\EMAB Console Web.lnk"
+Type: files; Name: "{userprograms}\Désinstaller EMAB Console Web.lnk"
 
 [Files]
 ; Mode onedir : on installe le dossier complet (démarrage rapide, pas

@@ -36,15 +36,15 @@ FLAG_NAME = "update_pending.flag"
 UPDATES_DIR = "updates"
 
 # Identifie l'installateur de la console parmi les fichiers d'une release.
-ASSET_HINT = "Console-Web-Setup"
+ASSET_HINT = "SKS-EMAB-Console-Web-Setup"
 
 # --- Application bureau « SKS-EMAB Gestionnaire » -------------------------------
 # La console installe aussi le Gestionnaire sur le poste : ses versions sont
 # publiées sous le tag « desktop-vX.Y.Z » avec un installateur dont le nom
-# contient « Gestionnaire-Setup ». L'installateur crée son propre raccourci
+# contient « SKS-EMAB-Gestionnaire-Setup ». L'installateur crée son propre raccourci
 # sur le Bureau, distinct de celui de la console.
 DESKTOP_TAG_PREFIX = "desktop-v"
-DESKTOP_ASSET_HINT = "Gestionnaire-Setup"
+DESKTOP_ASSET_HINT = "SKS-EMAB-Gestionnaire-Setup"
 DESKTOP_EXE_NAME = "EMAB-Gestionnaire.exe"
 # AppId Inno Setup du Gestionnaire (installer.iss) : clé de désinstallation
 # dans le registre, d'où on lit la version actuellement installée.
